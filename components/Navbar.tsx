@@ -18,14 +18,8 @@ export default function Navbar({ onLogout }: NavbarProps) {
         </div>
         <div className="flex gap-3 items-center">
           <button
-            onClick={() => router.push("/fornitori")}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors font-medium"
-          >
-            🏢 Fornitori
-          </button>
-          <button
             onClick={onLogout}
-            className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+            className="px-3 py-1.5 bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 hover:border-red-300 rounded-md transition-colors text-sm font-medium hover:shadow-sm"
           >
             Logout
           </button>

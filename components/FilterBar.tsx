@@ -36,7 +36,7 @@ export default function FilterBar({
           type="month"
           value={mese}
           onChange={(e) => onMeseChange(e.target.value)}
-          className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm"
         />
         {mese && (
           <button
