@@ -26,7 +26,7 @@ export default function FilterBar({
   };
 
   return (
-    <div className="flex gap-6 items-center">
+    <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-stretch lg:items-center w-full">
       {/* FILTRO PER MESE */}
       <div className="flex gap-3 items-center">
         <label className="font-semibold text-slate-700 whitespace-nowrap">
@@ -49,7 +49,7 @@ export default function FilterBar({
       </div>
 
       {/* BARRA DI RICERCA CON RADIO BUTTON E BOTTONE */}
-      <div className="flex gap-3 items-center flex-1">
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center flex-1">
         <div className="flex gap-3 whitespace-nowrap">
           <label className="flex items-center gap-1 cursor-pointer">
             <input

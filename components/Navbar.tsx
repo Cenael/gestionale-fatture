@@ -11,10 +11,10 @@ export default function Navbar({ onLogout }: NavbarProps) {
 
   return (
     <div className="sticky top-0 z-40 bg-white shadow-sm border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <span className="text-3xl">🍺</span>
-          <h1 className="text-2xl font-bold text-slate-900">Gestionale Bar</h1>
+          <span className="text-2xl sm:text-3xl">🍺</span>
+          <h1 className="text-lg sm:text-2xl font-bold text-slate-900">Gestionale Bar</h1>
         </div>
         <div className="flex gap-3 items-center">
           <button

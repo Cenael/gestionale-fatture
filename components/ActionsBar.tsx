@@ -18,8 +18,8 @@ export default function ActionsBar({
   const router = useRouter();
 
   return (
-    <div className="flex justify-between items-center">
-      <div className="flex gap-3 items-center">
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
+      <div className="flex flex-col sm:flex-row gap-3 items-start w-full sm:w-auto">
         <button
           onClick={onNewInvoice || (() => router.push("/nuova-fattura"))}
           className="flex items-center gap-2 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-semibold transition-colors shadow-md text-sm"

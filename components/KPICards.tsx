@@ -12,13 +12,13 @@ export default function KPICards({
   numFornitori,
 }: KPICardsProps) {
   return (
-    <div className="grid grid-cols-3 gap-4 mb-6">
-      <div className="bg-white rounded-lg shadow-sm px-5 py-4 border-l-4 border-sky-500 flex justify-between items-center h-16">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="bg-white rounded-lg shadow-sm px-4 sm:px-5 py-4 border-l-4 border-sky-500 flex flex-col sm:flex-row justify-between sm:items-center h-auto sm:h-16 gap-2 sm:gap-0">
         <p className="text-slate-700 text-sm font-semibold">FATTURE</p>
         <p className="text-xl font-bold text-sky-500">{numFatture}</p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm px-5 py-4 border-l-4 border-green-500 flex justify-between items-center h-16">
+      <div className="bg-white rounded-lg shadow-sm px-4 sm:px-5 py-4 border-l-4 border-green-500 flex flex-col sm:flex-row justify-between sm:items-center h-auto sm:h-16 gap-2 sm:gap-0">
         <p className="text-slate-700 text-sm font-semibold">
           TOTALE IMPORTO FATTURE
         </p>
@@ -27,7 +27,7 @@ export default function KPICards({
         </p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm px-5 py-4 border-l-4 border-slate-300 flex justify-between items-center h-16">
+      <div className="bg-white rounded-lg shadow-sm px-4 sm:px-5 py-4 border-l-4 border-slate-300 flex flex-col sm:flex-row justify-between sm:items-center h-auto sm:h-16 gap-2 sm:gap-0">
         <p className="text-slate-700 text-sm font-semibold">
           FORNITORI
         </p>

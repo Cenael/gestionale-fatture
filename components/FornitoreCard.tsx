@@ -39,17 +39,17 @@ export default function FornitoreCard({
       {/* HEADER FORNITORE - CLICCABILE */}
       <div
         onClick={onToggle}
-        className="cursor-pointer p-6 flex justify-between items-center bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 transition-colors border-l-4 border-sky-500"
+        className="cursor-pointer p-4 md:p-6 flex flex-col sm:flex-row justify-between sm:items-center gap-3 sm:gap-0 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 transition-colors border-l-4 border-sky-500"
       >
         <div>
-          <h3 className="font-bold text-lg text-slate-900">{nome}</h3>
-          <p className="text-sm text-slate-600">
+          <h3 className="font-bold text-base sm:text-lg text-slate-900">{nome}</h3>
+          <p className="text-xs sm:text-sm text-slate-600">
             {fatture.length} fattur{fatture.length !== 1 ? "e" : "a"}
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between sm:justify-end gap-4">
           <div className="text-right">
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-lg sm:text-2xl font-bold text-green-600">
               € {totale.toFixed(2)}
             </p>
           </div>
