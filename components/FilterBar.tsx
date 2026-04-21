@@ -7,6 +7,7 @@ interface FilterBarProps {
   onSearchChange: (term: string) => void;
   searchType: "numero" | "data";
   onSearchTypeChange: (type: "numero" | "data") => void;
+  onSearch: () => void;
 }
 
 export default function FilterBar({
@@ -16,9 +17,16 @@ export default function FilterBar({
   onSearchChange,
   searchType,
   onSearchTypeChange,
+  onSearch,
 }: FilterBarProps) {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      onSearch();
+    }
+  };
+
   return (
-    <div className="flex gap-6 items-center">
+    <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-stretch lg:items-center w-full">
       {/* FILTRO PER MESE */}
       <div className="flex gap-3 items-center">
         <label className="font-semibold text-slate-700 whitespace-nowrap">
@@ -28,7 +36,7 @@ export default function FilterBar({
           type="month"
           value={mese}
           onChange={(e) => onMeseChange(e.target.value)}
-          className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm"
         />
         {mese && (
           <button
@@ -40,8 +48,8 @@ export default function FilterBar({
         )}
       </div>
 
-      {/* BARRA DI RICERCA */}
-      <div className="flex gap-3 items-center flex-1">
+      {/* BARRA DI RICERCA CON RADIO BUTTON E BOTTONE */}
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center flex-1">
         <div className="flex gap-3 whitespace-nowrap">
           <label className="flex items-center gap-1 cursor-pointer">
             <input
@@ -71,11 +79,21 @@ export default function FilterBar({
           placeholder={searchType === "numero" ? "🔍 Numero..." : "🔍 DD/MM/YYYY..."}
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
+          onKeyPress={handleKeyPress}
           className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm"
         />
+        <button
+          onClick={onSearch}
+          className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-semibold transition-colors text-sm"
+        >
+          Cerca
+        </button>
         {searchTerm && (
           <button
-            onClick={() => onSearchChange("")}
+            onClick={() => {
+              onSearchChange("");
+              onSearch();
+            }}
             className="text-slate-500 hover:text-slate-700 transition-colors text-sm"
           >
             ✕
