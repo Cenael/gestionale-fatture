@@ -2,16 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase-client";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
-export default function ModificaFattura() {
+export default function NewInvoice() {
   const router = useRouter();
-  const params = useParams();
-  const id = params.id as string;
-
-  const [fornitori, setFornitori] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showNewSupplier, setShowNewSupplier] = useState(false);
+  const [newSupplier, setNewSupplier] = useState("");
   const [form, setForm] = useState({
     numero: "",
     data: "",
@@ -20,42 +19,30 @@ export default function ModificaFattura() {
   });
 
   useEffect(() => {
-    fetchFornitori();
-    fetchFattura();
-  }, [id]);
+    fetchSuppliers();
+  }, []);
 
-  async function fetchFornitori() {
+  async function fetchSuppliers() {
     const { data } = await supabase.from("fornitori").select("*").order("nome");
-    setFornitori(data as any || []);
+    setSuppliers(data as any || []);
   }
 
-  async function fetchFattura() {
-    const { data, error: fetchError } = await supabase
-      .from("fatture")
-      .select("*")
-      .eq("id", id)
-      .single();
+  async function handleAddSupplier() {
+    if (!newSupplier.trim()) return;
 
-    if (fetchError) {
-      setError("Errore nel caricamento della fattura: " + fetchError.message);
-      setLoading(false);
-      return;
+    const { data, error } = await supabase
+      .from("fornitori")
+      .insert([{ nome: newSupplier }])
+      .select();
+
+    if (error) {
+      setError("Errore nell'aggiunta del fornitore: " + error.message);
+    } else if (data) {
+      setSuppliers([...suppliers, data[0]]);
+      setForm({ ...form, fornitore_id: data[0].id });
+      setNewSupplier("");
+      setShowNewSupplier(false);
     }
-
-    if (data) {
-      // Converti data YYYY-MM-DD a DD/MM/YYYY
-      const [anno, mese, giorno] = data.data.split("-");
-      const dataFormattata = `${giorno}/${mese}/${anno}`;
-
-      setForm({
-        numero: data.numero,
-        data: dataFormattata,
-        importo: data.importo.toString(),
-        fornitore_id: data.fornitore_id,
-      });
-    }
-
-    setLoading(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -75,56 +62,42 @@ export default function ModificaFattura() {
       return;
     }
 
-    // Valida formato DD/MM/YYYY
+    // Validate DD/MM/YYYY format
     const dataRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
     const match = form.data.match(dataRegex);
-
+    
     if (!match) {
       setError("Formato data non valido. Usa DD/MM/YYYY");
       setLoading(false);
       return;
     }
 
-    // Converti DD/MM/YYYY a YYYY-MM-DD per il DB
-    const [, giorno, mese, anno] = match;
-    const dataDB = `${anno}-${mese}-${giorno}`;
+    // Convert DD/MM/YYYY to YYYY-MM-DD for database
+    const [, day, month, year] = match;
+    const dataDB = `${year}-${month}-${day}`;
 
-    const fatturaData = {
+    const invoiceData = {
       numero: form.numero.trim(),
-      data: dataDB,
+      data: dataDB,  // Save as YYYY-MM-DD
       importo: parseFloat(form.importo),
       fornitore_id: form.fornitore_id,
     };
 
-    console.log("Aggiornando fattura:", fatturaData);
+    console.log("Salvando fattura:", invoiceData);
 
-    const { error: updateError } = await supabase
-      .from("fatture")
-      .update(fatturaData)
-      .eq("id", id);
-
-    if (updateError) {
-      console.error("Errore nell'aggiornamento:", updateError);
-      setError("Errore nell'aggiornamento: " + updateError.message);
+    const { data, error } = await supabase.from("fatture").insert([invoiceData]).select();
+    
+    if (error) {
+      console.error("Errore nel salvataggio:", error);
+      setError("Errore nel salvataggio: " + error.message);
       setLoading(false);
     } else {
-      console.log("Fattura aggiornata");
+      console.log("Fattura salvata:", data);
       // Torna al dashboard senza refresh
       setTimeout(() => {
         window.location.href = "/";
       }, 500);
     }
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-sky-600"></div>
-          <p className="mt-4 text-slate-600">Caricamento...</p>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -133,8 +106,8 @@ export default function ModificaFattura() {
       <div className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Modifica Fattura</h1>
-            <p className="text-slate-600 text-sm">Modifica i dati della fattura</p>
+            <h1 className="text-2xl font-bold text-slate-900">Nuova Fattura</h1>
+            <p className="text-slate-600 text-sm">Aggiungi una nuova fattura fornitore</p>
           </div>
           <a
             href="/"
@@ -181,12 +154,12 @@ export default function ModificaFattura() {
                   onChange={(e) => {
                     let value = e.target.value;
                     // Accetta solo numeri e /
-                    value = value.replace(/[^\d/]/g, "");
+                    value = value.replace(/[^\d/]/g, '');
                     // Formatta automaticamente DD/MM/YYYY
-                    if (value.length === 2 && !value.includes("/")) {
-                      value = value + "/";
+                    if (value.length === 2 && !value.includes('/')) {
+                      value = value + '/';
                     } else if (value.length === 5 && (value.match(/\//g) || []).length === 1) {
-                      value = value + "/";
+                      value = value + '/';
                     }
                     // Max 10 caratteri (DD/MM/YYYY)
                     if (value.length <= 10) {
@@ -201,9 +174,9 @@ export default function ModificaFattura() {
                   type="date"
                   onChange={(e) => {
                     if (e.target.value) {
-                      // Converti YYYY-MM-DD a DD/MM/YYYY
-                      const [anno, mese, giorno] = e.target.value.split("-");
-                      setForm({ ...form, data: `${giorno}/${mese}/${anno}` });
+                      // Convert YYYY-MM-DD to DD/MM/YYYY
+                      const [year, month, day] = e.target.value.split('-');
+                      setForm({ ...form, data: `${day}/${month}/${year}` });
                     }
                   }}
                   className="absolute right-0 top-0 w-10 h-10 opacity-0 cursor-pointer"
@@ -237,19 +210,54 @@ export default function ModificaFattura() {
             <label className="block text-sm font-semibold text-slate-700 mb-2">
               Fornitore
             </label>
-            <select
-              value={form.fornitore_id}
-              onChange={(e) => setForm({ ...form, fornitore_id: e.target.value })}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
-            >
-              <option value="">Seleziona fornitore</option>
-              {fornitori.map((f: any) => (
-                <option key={f.id} value={f.id}>
-                  {f.nome}
-                </option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <select
+                value={form.fornitore_id}
+                onChange={(e) =>
+                  setForm({ ...form, fornitore_id: e.target.value })
+                }
+                className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+              >
+                <option value="">Seleziona fornitore</option>
+                {suppliers.map((supplier: any) => (
+                  <option key={supplier.id} value={supplier.id}>
+                    {supplier.nome}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setShowNewSupplier(!showNewSupplier)}
+                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-900 font-medium rounded-lg transition"
+              >
+                + Nuovo
+              </button>
+            </div>
           </div>
+
+          {showNewSupplier && (
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Nome Fornitore
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Nome fornitore"
+                  value={newSupplier}
+                  onChange={(e) => setNewSupplier(e.target.value)}
+                  className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddSupplier}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition"
+                >
+                  Aggiungi
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="flex gap-4 pt-4">
             <button
@@ -257,7 +265,7 @@ export default function ModificaFattura() {
               disabled={loading}
               className="flex-1 bg-sky-600 hover:bg-sky-700 disabled:bg-slate-400 text-white font-semibold py-3 rounded-lg transition"
             >
-              {loading ? "Salvataggio..." : "Salva Modifiche"}
+              {loading ? "Salvataggio..." : "Salva Fattura"}
             </button>
             <a
               href="/"
@@ -271,3 +279,5 @@ export default function ModificaFattura() {
     </div>
   );
 }
+
+

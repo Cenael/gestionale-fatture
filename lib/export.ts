@@ -12,77 +12,77 @@ export interface Fattura {
 export interface FornitoreData {
   nome: string;
   fatture: Fattura[];
-  totale: number;
+  total: number;
 }
 
 export function handleExportPDF(
   data: Fattura[],
-  mese: string,
-  fornitori_ordinati: FornitoreData[]
+  month: string,
+  orderedSuppliers: FornitoreData[]
 ) {
   const doc = new jsPDF();
   let yPosition = 10;
 
   doc.setFont("", "bold");
   doc.setFontSize(18);
-  doc.text("Gestionale Bar", 10, yPosition);
+  doc.text("Fatture Bar", 10, yPosition);
   yPosition += 10;
 
   doc.setFontSize(12);
   doc.setFont("", "normal");
-  const [anno, mese_num] = mese.split("-");
-  const mesiNomi = [
+  const [year, monthNum] = month.split("-");
+  const monthNames = [
     "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
     "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre",
   ];
   doc.text(
-    `Report: ${mesiNomi[parseInt(mese_num) - 1]} ${anno}`,
+    `Report: ${monthNames[parseInt(monthNum) - 1]} ${year}`,
     10,
     yPosition
   );
   yPosition += 10;
 
-  // TOTALI
-  const totaleGenerale = data.reduce(
-    (acc, f) => acc + Number(f.importo),
+  // Totals
+  const totalAmount = data.reduce(
+    (acc, invoice) => acc + Number(invoice.importo),
     0
   );
   doc.setFont("", "bold");
-  doc.text(`Totale Fatture: € ${totaleGenerale.toFixed(2)}`, 10, yPosition);
+  doc.text(`Totale Fatture: € ${totalAmount.toFixed(2)}`, 10, yPosition);
   yPosition += 8;
   doc.setFont("", "normal");
   doc.text(`Numero Fatture: ${data.length}`, 10, yPosition);
   yPosition += 12;
 
-  fornitori_ordinati.forEach((fornitore) => {
+  orderedSuppliers.forEach((supplier) => {
     if (yPosition > 260) {
       doc.addPage();
       yPosition = 10;
     }
 
     doc.setFont("", "bold");
-    doc.text(fornitore.nome, 10, yPosition);
+    doc.text(supplier.nome, 10, yPosition);
     yPosition += 7;
 
     doc.setFont("", "normal");
     doc.setFontSize(10);
 
-    fornitore.fatture.forEach((f: any) => {
+    supplier.fatture.forEach((inv: any) => {
       if (yPosition > 260) {
         doc.addPage();
         yPosition = 10;
       }
 
-      const data_formatted = new Date(f.data).toLocaleDateString("it-IT");
-      doc.text(`${f.numero}`, 15, yPosition);
-      doc.text(data_formatted, 35, yPosition);
-      doc.text(`€ ${Number(f.importo).toFixed(2)}`, 55, yPosition);
+      const formattedDate = new Date(inv.data).toLocaleDateString("it-IT");
+      doc.text(`${inv.numero}`, 15, yPosition);
+      doc.text(formattedDate, 35, yPosition);
+      doc.text(`€ ${Number(inv.importo).toFixed(2)}`, 55, yPosition);
       yPosition += 6;
     });
 
     doc.setFont("", "bold");
     doc.text(
-      `Subtotale: € ${fornitore.totale.toFixed(2)}`,
+      `Subtotale: € ${supplier.total.toFixed(2)}`,
       60,
       yPosition
     );
@@ -92,33 +92,33 @@ export function handleExportPDF(
 
   yPosition += 5;
   doc.setFont("", "bold");
-  doc.text(`TOTALE: € ${totaleGenerale.toFixed(2)}`, 10, yPosition);
+  doc.text(`TOTALE: € ${totalAmount.toFixed(2)}`, 10, yPosition);
 
-  const filename = `Gestionale_Bar_${anno}_${mese_num}.pdf`;
+  const filename = `Gestionale_Bar_${year}_${monthNum}.pdf`;
   doc.save(filename);
 }
 
 export function handleExportPDFFornitore(
-  nomeFornitore: string,
+  supplierName: string,
   data: Fattura[],
-  mese: string
+  month: string
 ) {
-  const fornitoreFatture = data.filter(
-    (f) => (f.fornitori?.nome || "Sconosciuto") === nomeFornitore
+  const supplierInvoices = data.filter(
+    (inv) => (inv.fornitori?.nome || "Unknown") === supplierName
   );
 
-  if (fornitoreFatture.length === 0) return;
+  if (supplierInvoices.length === 0) return;
 
   const doc = new jsPDF();
   let yPosition = 10;
 
   doc.setFont("", "bold");
   doc.setFontSize(16);
-  doc.text(nomeFornitore, 10, yPosition);
+  doc.text(supplierName, 10, yPosition);
   yPosition += 8;
 
-  const [anno, mese_num] = mese.split("-");
-  const mesiNomi = [
+  const [year, monthNum] = month.split("-");
+  const monthNames = [
     "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
     "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre",
   ];
@@ -126,7 +126,7 @@ export function handleExportPDFFornitore(
   doc.setFont("", "normal");
   doc.setFontSize(11);
   doc.text(
-    `Report: ${mesiNomi[parseInt(mese_num) - 1]} ${anno}`,
+    `Report: ${monthNames[parseInt(monthNum) - 1]} ${year}`,
     10,
     yPosition
   );
@@ -139,91 +139,91 @@ export function handleExportPDFFornitore(
   yPosition += 8;
 
   doc.setFont("", "normal");
-  let subtotale = 0;
+  let subtotal = 0;
 
-  fornitoreFatture.forEach((f) => {
+  supplierInvoices.forEach((inv) => {
     if (yPosition > 260) {
       doc.addPage();
       yPosition = 10;
     }
 
-    const data_formatted = new Date(f.data).toLocaleDateString("it-IT");
-    doc.text(`${f.numero}`, 15, yPosition);
-    doc.text(data_formatted, 50, yPosition);
-    doc.text(`€ ${Number(f.importo).toFixed(2)}`, 100, yPosition);
+    const formattedDate = new Date(inv.data).toLocaleDateString("it-IT");
+    doc.text(`${inv.numero}`, 15, yPosition);
+    doc.text(formattedDate, 50, yPosition);
+    doc.text(`€ ${Number(inv.importo).toFixed(2)}`, 100, yPosition);
     yPosition += 6;
-    subtotale += Number(f.importo);
+    subtotal += Number(inv.importo);
   });
 
   yPosition += 3;
   doc.setFont("", "bold");
-  doc.text(`TOTALE: € ${subtotale.toFixed(2)}`, 100, yPosition);
+  doc.text(`TOTALE: € ${subtotal.toFixed(2)}`, 100, yPosition);
 
-  const filename = `Gestionale_Bar_${nomeFornitore}_${anno}_${mese_num}.pdf`;
+  const filename = `Gestionale_Bar_${supplierName}_${year}_${monthNum}.pdf`;
   doc.save(filename);
 }
 
 export function handleExportExcel(
   data: Fattura[],
-  mese: string,
-  fornitori_ordinati: FornitoreData[]
+  month: string,
+  orderedSuppliers: FornitoreData[]
 ) {
   const rows: any[] = [];
-  fornitori_ordinati.forEach((fornitore) => {
-    rows.push([fornitore.nome]);
+  orderedSuppliers.forEach((supplier) => {
+    rows.push([supplier.nome]);
     rows.push(["Numero", "Data", "Importo"]);
-    fornitore.fatture.forEach((f: any) => {
-      const data_formatted = new Date(f.data).toLocaleDateString("it-IT");
-      rows.push([f.numero, data_formatted, Number(f.importo).toFixed(2)]);
+    supplier.fatture.forEach((inv: any) => {
+      const formattedDate = new Date(inv.data).toLocaleDateString("it-IT");
+      rows.push([inv.numero, formattedDate, Number(inv.importo).toFixed(2)]);
     });
-    rows.push([`Subtotale: €`, fornitore.totale.toFixed(2)]);
+    rows.push([`Subtotale: €`, supplier.total.toFixed(2)]);
     rows.push([]);
   });
 
-  const totaleGenerale = data.reduce(
-    (acc, f) => acc + Number(f.importo),
+  const totalAmount = data.reduce(
+    (acc, inv) => acc + Number(inv.importo),
     0
   );
-  rows.push(["TOTALE", totaleGenerale.toFixed(2)]);
+  rows.push(["TOTALE", totalAmount.toFixed(2)]);
 
   const sheet = XLSX.utils.aoa_to_sheet(rows);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, sheet, "Fatture");
 
-  const [anno, mese_num] = mese.split("-");
-  const filename = `Gestionale_Bar_${anno}_${mese_num}.xlsx`;
+  const [year, monthNum] = month.split("-");
+  const filename = `Gestionale_Bar_${year}_${monthNum}.xlsx`;
   XLSX.writeFile(workbook, filename);
 }
 
 export function handleExportExcelFornitore(
-  nomeFornitore: string,
+  supplierName: string,
   data: Fattura[],
-  mese: string
+  month: string
 ) {
-  const fornitoreFatture = data.filter(
-    (f) => (f.fornitori?.nome || "Sconosciuto") === nomeFornitore
+  const supplierInvoices = data.filter(
+    (inv) => (inv.fornitori?.nome || "Unknown") === supplierName
   );
 
-  if (fornitoreFatture.length === 0) return;
+  if (supplierInvoices.length === 0) return;
 
   const rows: any[] = [];
-  rows.push([nomeFornitore]);
+  rows.push([supplierName]);
   rows.push(["Numero", "Data", "Importo"]);
 
-  let subtotale = 0;
-  fornitoreFatture.forEach((f: any) => {
-    const data_formatted = new Date(f.data).toLocaleDateString("it-IT");
-    rows.push([f.numero, data_formatted, Number(f.importo).toFixed(2)]);
-    subtotale += Number(f.importo);
+  let subtotal = 0;
+  supplierInvoices.forEach((inv: any) => {
+    const formattedDate = new Date(inv.data).toLocaleDateString("it-IT");
+    rows.push([inv.numero, formattedDate, Number(inv.importo).toFixed(2)]);
+    subtotal += Number(inv.importo);
   });
 
-  rows.push([`TOTALE: €`, subtotale.toFixed(2)]);
+  rows.push([`TOTALE: €`, subtotal.toFixed(2)]);
 
   const sheet = XLSX.utils.aoa_to_sheet(rows);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, sheet, "Fatture");
 
-  const [anno, mese_num] = mese.split("-");
-  const filename = `Gestionale_Bar_${nomeFornitore}_${anno}_${mese_num}.xlsx`;
+  const [year, monthNum] = month.split("-");
+  const filename = `Gestionale_Bar_${supplierName}_${year}_${monthNum}.xlsx`;
   XLSX.writeFile(workbook, filename);
 }

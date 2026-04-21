@@ -6,32 +6,32 @@ import {
   handleExportExcelFornitore,
 } from "@/lib/export";
 
-export interface Fattura {
+export interface Invoice {
   id: string;
   numero: string;
   data: string;
   importo: number;
 }
 
-export interface FornitoreCardProps {
+export interface SupplierCardProps {
   nome: string;
-  fatture: Fattura[];
-  totale: number;
+  fatture: Invoice[];
+  total: number;
   isOpen: boolean;
   onToggle: () => void;
-  onDeleteFattura: (id: string) => void;
-  mese: string;
+  onDeleteInvoice: (id: string) => void;
+  month: string;
 }
 
 export default function FornitoreCard({
   nome,
   fatture,
-  totale,
+  total,
   isOpen,
   onToggle,
-  onDeleteFattura,
-  mese,
-}: FornitoreCardProps) {
+  onDeleteInvoice,
+  month,
+}: SupplierCardProps) {
   const router = useRouter();
 
   return (
@@ -50,7 +50,7 @@ export default function FornitoreCard({
         <div className="flex items-center justify-between sm:justify-end gap-4">
           <div className="text-right">
             <p className="text-lg sm:text-2xl font-bold text-green-600">
-              € {totale.toFixed(2)}
+              € {total.toFixed(2)}
             </p>
           </div>
           <span
@@ -89,34 +89,34 @@ export default function FornitoreCard({
 
           {/* RIGHE FATTURE */}
           <div className="space-y-2">
-            {fatture.map((f: Fattura) => (
+            {fatture.map((invoice: Invoice) => (
               <div
-                key={f.id}
+                key={invoice.id}
                 className="grid grid-cols-12 gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors items-center"
               >
                 <div className="col-span-3">
-                  <p className="font-semibold text-slate-900">{f.numero}</p>
+                  <p className="font-semibold text-slate-900">{invoice.numero}</p>
                 </div>
                 <div className="col-span-3 flex justify-center">
                   <p className="text-sm text-slate-600">
-                    {new Date(f.data).toLocaleDateString("it-IT")}
+                    {new Date(invoice.data).toLocaleDateString("it-IT")}
                   </p>
                 </div>
                 <div className="col-span-3 flex justify-end">
                   <p className="font-bold text-green-600">
-                    € {Number(f.importo).toFixed(2)}
+                    € {Number(invoice.importo).toFixed(2)}
                   </p>
                 </div>
                 <div className="col-span-3 flex gap-3 justify-end">
                   <button
-                    onClick={() => router.push(`/modifica-fattura/${f.id}`)}
+                    onClick={() => router.push(`/modifica-fattura/${invoice.id}`)}
                     className="px-2 py-1 text-slate-500 hover:text-slate-700 transition-colors text-sm"
                     title="Modifica"
                   >
                     ✏️
                   </button>
                   <button
-                    onClick={() => onDeleteFattura(f.id)}
+                    onClick={() => onDeleteInvoice(invoice.id)}
                     className="px-2 py-1 text-slate-400 hover:text-slate-600 transition-colors text-sm"
                     title="Elimina"
                   >
@@ -130,14 +130,14 @@ export default function FornitoreCard({
           {/* EXPORT SINGOLO FORNITORE */}
           <div className="border-t border-slate-200 pt-4 flex gap-4 text-sm">
             <button
-              onClick={() => handleExportPDFFornitore(nome, fatture, mese)}
+              onClick={() => handleExportPDFFornitore(nome, fatture, month)}
               className="text-slate-600 hover:text-slate-800 font-semibold transition-colors"
             >
               📄 PDF
             </button>
             <span className="text-slate-400">|</span>
             <button
-              onClick={() => handleExportExcelFornitore(nome, fatture, mese)}
+              onClick={() => handleExportExcelFornitore(nome, fatture, month)}
               className="text-slate-600 hover:text-slate-800 font-semibold transition-colors"
             >
               📊 Excel

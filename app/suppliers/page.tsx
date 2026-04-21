@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase-client";
 import { useRouter } from "next/navigation";
 
-export default function Fornitori() {
+export default function Suppliers() {
   const router = useRouter();
-  const [fornitori, setFornitori] = useState<any[]>([]);
+  const [suppliers, setSuppliers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [nuovoFornitore, setNuovoFornitore] = useState("");
+  const [newSupplier, setNewSupplier] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [user, setUser] = useState<any>(null);
 
@@ -24,23 +24,23 @@ export default function Fornitori() {
       return;
     }
     setUser(userData.user);
-    fetchFornitori();
+    fetchSuppliers();
   }
 
-  async function fetchFornitori() {
+  async function fetchSuppliers() {
     const { data } = await supabase
       .from("fornitori")
       .select("*")
       .order("nome");
-    setFornitori(data as any || []);
+    setSuppliers(data as any || []);
     setLoading(false);
   }
 
-  async function handleAddFornitore(e: React.FormEvent) {
+  async function handleAddSupplier(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
-    if (!nuovoFornitore.trim()) {
+    if (!newSupplier.trim()) {
       setError("Inserisci il nome del fornitore");
       return;
     }
@@ -49,22 +49,22 @@ export default function Fornitori() {
 
     const { data, error: dbError } = await supabase
       .from("fornitori")
-      .insert([{ nome: nuovoFornitore.trim() }])
+      .insert([{ nome: newSupplier.trim() }])
       .select();
 
     if (dbError) {
       setError("Errore nell'aggiunta del fornitore: " + dbError.message);
       setIsAdding(false);
     } else if (data) {
-      setFornitori([...fornitori, data[0]].sort((a, b) => a.nome.localeCompare(b.nome)));
-      setNuovoFornitore("");
+      setSuppliers([...suppliers, data[0]].sort((a, b) => a.nome.localeCompare(b.nome)));
+      setNewSupplier("");
       setIsAdding(false);
     }
   }
 
-  async function handleDeleteFornitore(id: string, nome: string) {
-    // Controlla se il fornitore ha fatture associate
-    const { data: fattureAssociate, error: checkError } = await supabase
+  async function handleDeleteSupplier(id: string, supplierName: string) {
+    // Check if supplier has associated invoices
+    const { data: associatedInvoices, error: checkError } = await supabase
       .from("fatture")
       .select("id", { count: "exact" })
       .eq("fornitore_id", id);
@@ -74,16 +74,16 @@ export default function Fornitori() {
       return;
     }
 
-    if (fattureAssociate && fattureAssociate.length > 0) {
+    if (associatedInvoices && associatedInvoices.length > 0) {
       setError(
-        `Non puoi eliminare "${nome}" perché ha ${fattureAssociate.length} ${fattureAssociate.length !== 1 ? "fatture" : "fattura"} associata${fattureAssociate.length !== 1 ? "e" : ""}. Elimina prima le fatture.`
+        `Non puoi eliminare "${supplierName}" perché ha ${associatedInvoices.length} ${associatedInvoices.length !== 1 ? "fatture" : "fattura"} associata${associatedInvoices.length !== 1 ? "e" : ""}. Elimina prima le fatture.`
       );
       return;
     }
 
     if (
       !confirm(
-        `Sei sicuro di voler eliminare "${nome}"? Questa azione non può essere annullata.`
+        `Sei sicuro di voler eliminare "${supplierName}"? Questa azione non può essere annullata.`
       )
     ) {
       return;
@@ -97,8 +97,8 @@ export default function Fornitori() {
     if (dbError) {
       setError("Errore nell'eliminazione: " + dbError.message);
     } else {
-      setFornitori(fornitori.filter((f) => f.id !== id));
-      setError(""); // Pulisci errori precedenti
+      setSuppliers(suppliers.filter((s) => s.id !== id));
+      setError("");
     }
   }
 
@@ -149,12 +149,12 @@ export default function Fornitori() {
             </div>
           )}
 
-          <form onSubmit={handleAddFornitore} className="flex gap-4">
+          <form onSubmit={handleAddSupplier} className="flex gap-4">
             <input
               type="text"
               placeholder="Nome fornitore"
-              value={nuovoFornitore}
-              onChange={(e) => setNuovoFornitore(e.target.value)}
+              value={newSupplier}
+              onChange={(e) => setNewSupplier(e.target.value)}
               className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
               disabled={isAdding}
             />
@@ -168,15 +168,15 @@ export default function Fornitori() {
           </form>
         </div>
 
-        {/* Lista Fornitori */}
+        {/* Suppliers List */}
         <div className="bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden">
           <div className="px-8 py-6 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
             <h2 className="text-lg font-bold text-slate-900">
-              {fornitori.length} {fornitori.length !== 1 ? "Fornitori" : "Fornitore"}
+              {suppliers.length} {suppliers.length !== 1 ? "Fornitori" : "Fornitore"}
             </h2>
           </div>
 
-          {fornitori.length === 0 ? (
+          {suppliers.length === 0 ? (
             <div className="px-8 py-12 text-center">
               <p className="text-slate-600 text-lg mb-4">Nessun fornitore aggiunto</p>
               <p className="text-slate-500">
@@ -185,19 +185,19 @@ export default function Fornitori() {
             </div>
           ) : (
             <div className="divide-y divide-slate-200">
-              {fornitori.map((fornitore) => (
+              {suppliers.map((supplier) => (
                 <div
-                  key={fornitore.id}
+                  key={supplier.id}
                   className="px-8 py-4 hover:bg-slate-50 transition flex items-center justify-between"
                 >
                   <div className="flex-1">
                     <h3 className="font-semibold text-slate-900">
-                      {fornitore.nome}
+                      {supplier.nome}
                     </h3>
                   </div>
                   <button
                     onClick={() =>
-                      handleDeleteFornitore(fornitore.id, fornitore.nome)
+                      handleDeleteSupplier(supplier.id, supplier.nome)
                     }
                     className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 font-medium rounded-lg transition"
                   >
