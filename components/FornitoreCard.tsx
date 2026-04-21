@@ -131,14 +131,14 @@ export default function FornitoreCard({
           <div className="border-t border-slate-200 pt-4 flex gap-4 text-sm">
             <button
               onClick={() => handleExportPDFFornitore(nome, fatture, mese)}
-              className="text-red-600 hover:text-red-800 font-semibold transition-colors"
+              className="text-slate-600 hover:text-slate-800 font-semibold transition-colors"
             >
               📄 PDF
             </button>
             <span className="text-slate-400">|</span>
             <button
               onClick={() => handleExportExcelFornitore(nome, fatture, mese)}
-              className="text-green-600 hover:text-green-800 font-semibold transition-colors"
+              className="text-slate-600 hover:text-slate-800 font-semibold transition-colors"
             >
               📊 Excel
             </button>

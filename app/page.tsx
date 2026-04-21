@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFatture } from "@/hooks/useFatture";
 import { handleExportPDF, handleExportExcel } from "@/lib/export";
-import { filterFatture, groupFatture, calculateTotal } from "@/lib/fatture-utils";
+import { groupFatture, calculateTotal } from "@/lib/fatture-utils";
 import Navbar from "@/components/Navbar";
 import FornitoreCard from "@/components/FornitoreCard";
 import ActionsBar from "@/components/ActionsBar";
@@ -19,8 +19,9 @@ export default function Home() {
   const [openFornitore, setOpenFornitore] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchType, setSearchType] = useState<"numero" | "data">("numero");
+  const [activeSearch, setActiveSearch] = useState("");
 
-  const { data, loading, user, deleteFattura } = useFatture(mese);
+  const { data, loading, user, deleteFattura } = useFatture(mese, activeSearch, searchType);
 
   async function handleLogout() {
     const { supabase } = await import("@/lib/supabase-client");
@@ -39,23 +40,22 @@ export default function Home() {
     );
   }
 
-  // Utilizza le funzioni utility per filtraggio e grouping
-  const filteredData = filterFatture(data, searchTerm, searchType);
-  const fornitori_ordinati = groupFatture(filteredData);
-  const totaleGenerale = calculateTotal(filteredData);
-  const numFatture = filteredData.length;
+  // Usa direttamente data (filtrato in Supabase)
+  const fornitori_ordinati = groupFatture(data);
+  const totaleGenerale = calculateTotal(data);
+  const numFatture = data.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-slate-50">
       <Navbar onLogout={handleLogout} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* ACTIONS E EXPORT */}
         <div className="mb-8 flex flex-col gap-4">
           <ActionsBar
-            onExportPDF={() => handleExportPDF(filteredData, mese, fornitori_ordinati)}
-            onExportExcel={() => handleExportExcel(filteredData, mese, fornitori_ordinati)}
-            showExport={filteredData.length > 0}
+            onExportPDF={() => handleExportPDF(data, mese, fornitori_ordinati)}
+            onExportExcel={() => handleExportExcel(data, mese, fornitori_ordinati)}
+            showExport={data.length > 0}
           />
 
           {/* FILTRI */}
@@ -66,6 +66,7 @@ export default function Home() {
             onSearchChange={setSearchTerm}
             searchType={searchType}
             onSearchTypeChange={setSearchType}
+            onSearch={() => setActiveSearch(searchTerm)}
           />
         </div>
 
@@ -83,7 +84,7 @@ export default function Home() {
         </div>
 
         {/* LISTA FORNITORI COLLAPSIBILE */}
-        {filteredData.length > 0 ? (
+        {data.length > 0 ? (
           <div className="space-y-4">
             {fornitori_ordinati.map((fornitore) => (
               <FornitoreCard

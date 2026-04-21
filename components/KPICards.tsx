@@ -27,11 +27,11 @@ export default function KPICards({
         </p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm px-5 py-4 border-l-4 border-purple-500 flex justify-between items-center h-16">
+      <div className="bg-white rounded-lg shadow-sm px-5 py-4 border-l-4 border-slate-300 flex justify-between items-center h-16">
         <p className="text-slate-700 text-sm font-semibold">
           FORNITORI
         </p>
-        <p className="text-xl font-bold text-purple-500">
+        <p className="text-xl font-bold text-slate-700">
           {numFornitori}
         </p>
       </div>

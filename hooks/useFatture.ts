@@ -10,7 +10,7 @@ export interface Fattura {
   fornitori?: { nome: string };
 }
 
-export function useFatture(mese: string) {
+export function useFatture(mese: string, searchTerm: string = "", searchType: "numero" | "data" = "numero") {
   const [data, setData] = useState<Fattura[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
@@ -31,7 +31,7 @@ export function useFatture(mese: string) {
       .from("fatture")
       .select("*, fornitori(nome)");
 
-    // Se mese è vuoto (""), mostra TUTTE le fatture
+    // Filtro per mese se specificato
     if (mese && mese.trim() !== "") {
       const [anno, mese_num] = mese.split("-");
       const start = `${anno}-${mese_num}-01`;
@@ -43,6 +43,16 @@ export function useFatture(mese: string) {
       const end = `${anno}-${mese_num}-${String(ultimoGiorno).padStart(2, "0")}`;
 
       query = query.gte("data", start).lte("data", end);
+    }
+
+    // Filtro per ricerca basato sul tipo selezionato
+    if (searchTerm && searchTerm.trim() !== "") {
+      const searchValue = `%${searchTerm.toLowerCase()}%`;
+      if (searchType === "numero") {
+        query = query.ilike("numero", searchValue);
+      } else {
+        query = query.ilike("data", searchValue);
+      }
     }
 
     const { data: fatture } = await query.order("data", { ascending: false });
@@ -74,7 +84,7 @@ export function useFatture(mese: string) {
       isMounted = false;
       listener?.subscription?.unsubscribe();
     };
-  }, [mese]);
+  }, [mese, searchTerm, searchType]);
 
   return { data, loading, user, deleteFattura, refetch: loadData };
 }

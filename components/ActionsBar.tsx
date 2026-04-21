@@ -30,14 +30,14 @@ export default function ActionsBar({
         <div className="flex gap-4 text-sm">
           <button
             onClick={onExportPDF}
-            className="text-red-600 hover:text-red-800 font-semibold transition-colors"
+            className="text-slate-600 hover:text-slate-800 font-semibold transition-colors"
           >
             📄 PDF
           </button>
           <span className="text-slate-400">|</span>
           <button
             onClick={onExportExcel}
-            className="text-green-600 hover:text-green-800 font-semibold transition-colors"
+            className="text-slate-600 hover:text-slate-800 font-semibold transition-colors"
           >
             📊 Excel
           </button>
