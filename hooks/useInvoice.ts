@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase-client";
 
-export interface Fattura {
+export interface Invoice {
   id: string;
   numero: string;
   data: string;
@@ -11,7 +11,7 @@ export interface Fattura {
 }
 
 export function useFatture(month: string, searchTerm: string = "", searchType: "numero" | "data" = "numero") {
-  const [data, setData] = useState<Fattura[]>([]);
+  const [data, setData] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
 
