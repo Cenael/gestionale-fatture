@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useFatture } from "@/hooks/useFatture";
+import { useFatture } from "@/hooks/useInvoice";
 import { handleExportPDF, handleExportExcel } from "@/lib/export";
-import { groupFatture, calculateTotal } from "@/lib/fatture-utils";
+import { groupFatture, calculateTotal } from "@/lib/invoice-utils";
 import Navbar from "@/components/Navbar";
 import SupplierCard from "@/components/SupplierCard";
 import ActionsBar from "@/components/ActionsBar";
@@ -33,9 +33,36 @@ export default function Home() {
 
   if (!user) {
     return (
-      <div className="p-6">
-        <h1>Login richiesto</h1>
-        <a href="/login">Vai al login</a>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-6">
+        <div className="text-center max-w-md">
+          <div className="mb-6">
+            <svg
+              className="mx-auto h-16 w-16 text-slate-400 mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">
+            Login Richiesto
+          </h1>
+          <p className="text-slate-600 text-lg mb-8">
+            Accedi al tuo account per continuare e gestire le tue fatture.
+          </p>
+          <a
+            href="/login"
+            className="inline-flex items-center px-8 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg"
+          >
+            Vai al Login
+          </a>
+        </div>
       </div>
     );
   }

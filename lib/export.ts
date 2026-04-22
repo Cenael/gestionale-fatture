@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 
-export interface Fattura {
+export interface Invoice {
   id: string;
   numero: string;
   data: string;
@@ -11,12 +11,12 @@ export interface Fattura {
 
 export interface FornitoreData {
   nome: string;
-  fatture: Fattura[];
+  fatture: Invoice[];
   total: number;
 }
 
 export function handleExportPDF(
-  data: Fattura[],
+  data: Invoice[],
   month: string,
   orderedSuppliers: FornitoreData[]
 ) {
@@ -67,7 +67,7 @@ export function handleExportPDF(
     doc.setFont("", "normal");
     doc.setFontSize(10);
 
-    supplier.fatture.forEach((inv: any) => {
+    supplier.fatture.forEach((inv: Invoice) => {
       if (yPosition > 260) {
         doc.addPage();
         yPosition = 10;
@@ -100,7 +100,7 @@ export function handleExportPDF(
 
 export function handleExportPDFFornitore(
   supplierName: string,
-  data: Fattura[],
+  data: Invoice[],
   month: string
 ) {
   const supplierInvoices = data.filter(
@@ -141,7 +141,7 @@ export function handleExportPDFFornitore(
   doc.setFont("", "normal");
   let subtotal = 0;
 
-  supplierInvoices.forEach((inv) => {
+  supplierInvoices.forEach((inv: Invoice) => {
     if (yPosition > 260) {
       doc.addPage();
       yPosition = 10;
@@ -164,7 +164,7 @@ export function handleExportPDFFornitore(
 }
 
 export function handleExportExcel(
-  data: Fattura[],
+  data: Invoice[],
   month: string,
   orderedSuppliers: FornitoreData[]
 ) {
@@ -172,7 +172,7 @@ export function handleExportExcel(
   orderedSuppliers.forEach((supplier) => {
     rows.push([supplier.nome]);
     rows.push(["Numero", "Data", "Importo"]);
-    supplier.fatture.forEach((inv: any) => {
+    supplier.fatture.forEach((inv: Invoice) => {
       const formattedDate = new Date(inv.data).toLocaleDateString("it-IT");
       rows.push([inv.numero, formattedDate, Number(inv.importo).toFixed(2)]);
     });
@@ -197,7 +197,7 @@ export function handleExportExcel(
 
 export function handleExportExcelFornitore(
   supplierName: string,
-  data: Fattura[],
+  data: Invoice[],
   month: string
 ) {
   const supplierInvoices = data.filter(
@@ -211,7 +211,7 @@ export function handleExportExcelFornitore(
   rows.push(["Numero", "Data", "Importo"]);
 
   let subtotal = 0;
-  supplierInvoices.forEach((inv: any) => {
+  supplierInvoices.forEach((inv: Invoice) => {
     const formattedDate = new Date(inv.data).toLocaleDateString("it-IT");
     rows.push([inv.numero, formattedDate, Number(inv.importo).toFixed(2)]);
     subtotal += Number(inv.importo);

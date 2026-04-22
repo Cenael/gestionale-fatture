@@ -1,14 +1,14 @@
-import { Fattura } from "@/hooks/useFatture";
+import { Invoice } from "@/hooks/useInvoice";
 
 // Group invoices by supplier with totals
 export interface SupplierGrouped {
   nome: string;
-  fatture: Fattura[];
+  fatture: Invoice[];
   total: number;
 }
 
-export function groupFatture(data: Fattura[]): SupplierGrouped[] {
-  const grouped: Record<string, Fattura[]> = {};
+export function groupFatture(data: Invoice[]): SupplierGrouped[] {
+  const grouped: Record<string, Invoice[]> = {};
 
   data.forEach((invoice) => {
     const supplierName = invoice.fornitori?.nome || "Unknown";
@@ -21,7 +21,7 @@ export function groupFatture(data: Fattura[]): SupplierGrouped[] {
       nome: name,
       fatture: invoices,
       total: invoices.reduce(
-        (acc: number, inv: any) => acc + Number(inv.importo),
+        (acc: number, inv: Invoice) => acc + Number(inv.importo),
         0,
       ),
     }))
@@ -29,6 +29,6 @@ export function groupFatture(data: Fattura[]): SupplierGrouped[] {
 }
 
 // Calculate total invoice amount
-export function calculateTotal(data: Fattura[]): number {
+export function calculateTotal(data: Invoice[]): number {
   return data.reduce((acc, invoice) => acc + Number(invoice.importo), 0);
 }
