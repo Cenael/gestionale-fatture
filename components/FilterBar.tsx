@@ -21,6 +21,7 @@ export default function FilterBar({
 }: FilterBarProps) {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       onSearch();
     }
   };
@@ -40,6 +41,7 @@ export default function FilterBar({
         />
         {month && (
           <button
+          type="button"
             onClick={() => onMonthChange("")}
             className="text-slate-500 hover:text-slate-700 transition-colors text-sm -ml-3"
           >
@@ -83,13 +85,15 @@ export default function FilterBar({
           className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm"
         />
         <button
-          onClick={onSearch}
-          className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-semibold transition-colors text-sm"
+  type="button"
+  onClick={onSearch}
+            className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-semibold transition-colors text-sm"
         >
           Cerca
         </button>
         {searchTerm && (
           <button
+            type="button"
             onClick={() => {
               onSearchChange("");
               onSearch();

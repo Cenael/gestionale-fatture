@@ -14,9 +14,12 @@ export function useFatture(month: string, searchTerm: string = "", searchType: "
   const [data, setData] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const loadData = async () => {
-    setLoading(true);
+    if (isInitialLoad) {
+      setLoading(true);
+    }
 
     const { data: userData } = await supabase.auth.getUser();
 
@@ -59,6 +62,9 @@ export function useFatture(month: string, searchTerm: string = "", searchType: "
 
     setData(invoices || []);
     setLoading(false);
+    if (isInitialLoad) {
+      setIsInitialLoad(false);
+    }
   };
 
   const deleteInvoice = async (id: string) => {
@@ -84,7 +90,7 @@ export function useFatture(month: string, searchTerm: string = "", searchType: "
       isMounted = false;
       authListener?.subscription?.unsubscribe();
     };
-  }, [month, searchTerm, searchType]);
+  }, [month, searchTerm, searchType, isInitialLoad]);
 
   return { data, loading, user, deleteInvoice, refetch: loadData };
 }
