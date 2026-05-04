@@ -1,8 +1,8 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
-export const createClient = async () => { // 1. Aggiungi async qui
-  const cookieStore = await cookies(); // 2. Aggiungi await qui
+export const createClient = async () => { // Deve essere async
+  const cookieStore = await cookies();     // Deve avere l'await
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,7 +18,7 @@ export const createClient = async () => { // 1. Aggiungi async qui
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Gestito dal middleware
+            // Ignora se chiamato da un Server Component
           }
         },
       },
