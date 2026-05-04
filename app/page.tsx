@@ -6,7 +6,7 @@ import { useFatture } from "@/hooks/useFatture";
 import { handleExportPDF, handleExportExcel } from "@/lib/export";
 import { groupFatture, calculateTotal } from "@/lib/fatture-utils";
 import Navbar from "@/components/Navbar";
-import FornitoreCard from "@/components/FornitoreCard";
+import SupplierCard from "@/components/SupplierCard";
 import ActionsBar from "@/components/ActionsBar";
 import FilterBar from "@/components/FilterBar";
 import KPICards from "@/components/KPICards";
@@ -15,13 +15,13 @@ import EmptyState from "@/components/EmptyState";
 export default function Home() {
   const router = useRouter();
 
-  const [mese, setMese] = useState(new Date().toISOString().slice(0, 7));
-  const [openFornitore, setOpenFornitore] = useState<string | null>(null);
+  const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [openSupplier, setOpenSupplier] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchType, setSearchType] = useState<"numero" | "data">("numero");
   const [activeSearch, setActiveSearch] = useState("");
 
-  const { data, loading, user, deleteFattura } = useFatture(mese, activeSearch, searchType);
+  const { data, loading, user, deleteInvoice } = useFatture(month, activeSearch, searchType);
 
   async function handleLogout() {
     const { supabase } = await import("@/lib/supabase-client");
@@ -40,28 +40,28 @@ export default function Home() {
     );
   }
 
-  // Usa direttamente data (filtrato in Supabase)
-  const fornitori_ordinati = groupFatture(data);
-  const totaleGenerale = calculateTotal(data);
-  const numFatture = data.length;
+  // Utilizza le funzioni utility per filtraggio e grouping
+  const orderedSuppliers = groupFatture(data);
+  const totalAmount = calculateTotal(data);
+  const invoiceCount = data.length;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <Navbar onLogout={handleLogout} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* ACTIONS E EXPORT */}
         <div className="mb-8 flex flex-col gap-4">
           <ActionsBar
-            onExportPDF={() => handleExportPDF(data, mese, fornitori_ordinati)}
-            onExportExcel={() => handleExportExcel(data, mese, fornitori_ordinati)}
+            onExportPDF={() => handleExportPDF(data, month, orderedSuppliers)}
+            onExportExcel={() => handleExportExcel(data, month, orderedSuppliers)}
             showExport={data.length > 0}
           />
 
           {/* FILTRI */}
           <FilterBar
-            mese={mese}
-            onMeseChange={setMese}
+            month={month}
+            onMonthChange={setMonth}
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             searchType={searchType}
@@ -72,9 +72,9 @@ export default function Home() {
 
         {/* KPI CARDS */}
         <KPICards
-          numFatture={numFatture}
-          totaleGenerale={totaleGenerale}
-          numFornitori={fornitori_ordinati.length}
+          invoiceCount={invoiceCount}
+          totalAmount={totalAmount}
+          supplierCount={orderedSuppliers.length}
         />
 
         {/* HEADER FORNITORI */}
@@ -86,20 +86,20 @@ export default function Home() {
         {/* LISTA FORNITORI COLLAPSIBILE */}
         {data.length > 0 ? (
           <div className="space-y-4">
-            {fornitori_ordinati.map((fornitore) => (
-              <FornitoreCard
-                key={fornitore.nome}
-                nome={fornitore.nome}
-                fatture={fornitore.fatture}
-                totale={fornitore.totale}
-                isOpen={openFornitore === fornitore.nome}
+            {orderedSuppliers.map((supplier) => (
+              <SupplierCard
+                key={supplier.nome}
+                nome={supplier.nome}
+                fatture={supplier.fatture}
+                total={supplier.total}
+                isOpen={openSupplier === supplier.nome}
                 onToggle={() =>
-                  setOpenFornitore(
-                    openFornitore === fornitore.nome ? null : fornitore.nome,
+                  setOpenSupplier(
+                    openSupplier === supplier.nome ? null : supplier.nome,
                   )
                 }
-                onDeleteFattura={deleteFattura}
-                mese={mese}
+                onDeleteInvoice={deleteInvoice}
+                month={month}
               />
             ))}
           </div>

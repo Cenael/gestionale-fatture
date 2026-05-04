@@ -1,8 +1,8 @@
 "use client";
 
 interface FilterBarProps {
-  mese: string;
-  onMeseChange: (mese: string) => void;
+  month: string;
+  onMonthChange: (month: string) => void;
   searchTerm: string;
   onSearchChange: (term: string) => void;
   searchType: "numero" | "data";
@@ -11,8 +11,8 @@ interface FilterBarProps {
 }
 
 export default function FilterBar({
-  mese,
-  onMeseChange,
+  month,
+  onMonthChange,
   searchTerm,
   onSearchChange,
   searchType,
@@ -27,20 +27,20 @@ export default function FilterBar({
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-stretch lg:items-center w-full">
-      {/* FILTRO PER MESE */}
+      {/* Month Filter */}
       <div className="flex gap-3 items-center">
         <label className="font-semibold text-slate-700 whitespace-nowrap">
-          {mese ? "Filtro mese:" : "Tutte"}
+          {month ? "Filtro mese:" : "Tutte"}
         </label>
         <input
           type="month"
-          value={mese}
-          onChange={(e) => onMeseChange(e.target.value)}
+          value={month}
+          onChange={(e) => onMonthChange(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm"
         />
-        {mese && (
+        {month && (
           <button
-            onClick={() => onMeseChange("")}
+            onClick={() => onMonthChange("")}
             className="text-slate-500 hover:text-slate-700 transition-colors text-sm -ml-3"
           >
             ✕

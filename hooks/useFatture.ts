@@ -10,7 +10,7 @@ export interface Fattura {
   fornitori?: { nome: string };
 }
 
-export function useFatture(mese: string, searchTerm: string = "", searchType: "numero" | "data" = "numero") {
+export function useFatture(month: string, searchTerm: string = "", searchType: "numero" | "data" = "numero") {
   const [data, setData] = useState<Fattura[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
@@ -31,21 +31,21 @@ export function useFatture(mese: string, searchTerm: string = "", searchType: "n
       .from("fatture")
       .select("*, fornitori(nome)");
 
-    // Filtro per mese se specificato
-    if (mese && mese.trim() !== "") {
-      const [anno, mese_num] = mese.split("-");
-      const start = `${anno}-${mese_num}-01`;
-      const ultimoGiorno = new Date(
-        parseInt(anno),
-        parseInt(mese_num),
+    // Month filter
+    if (month && month.trim() !== "") {
+      const [year, monthNum] = month.split("-");
+      const start = `${year}-${monthNum}-01`;
+      const lastDay = new Date(
+        parseInt(year),
+        parseInt(monthNum),
         0
       ).getDate();
-      const end = `${anno}-${mese_num}-${String(ultimoGiorno).padStart(2, "0")}`;
+      const end = `${year}-${monthNum}-${String(lastDay).padStart(2, "0")}`;
 
       query = query.gte("data", start).lte("data", end);
     }
 
-    // Filtro per ricerca basato sul tipo selezionato
+    // Search filter
     if (searchTerm && searchTerm.trim() !== "") {
       const searchValue = `%${searchTerm.toLowerCase()}%`;
       if (searchType === "numero") {
@@ -55,24 +55,24 @@ export function useFatture(mese: string, searchTerm: string = "", searchType: "n
       }
     }
 
-    const { data: fatture } = await query.order("data", { ascending: false });
+    const { data: invoices } = await query.order("data", { ascending: false });
 
-    setData(fatture || []);
+    setData(invoices || []);
     setLoading(false);
   };
 
-  const deleteFattura = async (id: string) => {
-    if (!confirm("Eliminare questa fattura?")) return;
+  const deleteInvoice = async (id: string) => {
+    if (!confirm("Delete this invoice?")) return;
 
     await supabase.from("fatture").delete().eq("id", id);
-    setData(data.filter((f) => f.id !== id));
+    setData(data.filter((invoice) => invoice.id !== id));
   };
 
   useEffect(() => {
     let isMounted = true;
     loadData();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
+    const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (isMounted) {
           setUser(session?.user || null);
@@ -82,9 +82,9 @@ export function useFatture(mese: string, searchTerm: string = "", searchType: "n
 
     return () => {
       isMounted = false;
-      listener?.subscription?.unsubscribe();
+      authListener?.subscription?.unsubscribe();
     };
-  }, [mese, searchTerm, searchType]);
+  }, [month, searchTerm, searchType]);
 
-  return { data, loading, user, deleteFattura, refetch: loadData };
+  return { data, loading, user, deleteInvoice, refetch: loadData };
 }
