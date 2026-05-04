@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import Navbar from "./components/Navbar";
+import PwaRegister from "./components/PwaRegister";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Gestionale Bar",
@@ -23,12 +17,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="it"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-screen flex flex-col bg-slate-50">
-        {children}
+    <html lang="it" className={`${inter.className} h-full antialiased`}>
+      <body className="h-full">
+        <PwaRegister />
+        <Navbar />
+        <main className="p-4">{children}</main>
       </body>
     </html>
   );
