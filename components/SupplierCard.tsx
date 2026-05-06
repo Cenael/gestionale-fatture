@@ -19,7 +19,6 @@ export interface SupplierCardProps {
   total: number;
   isOpen: boolean;
   onToggle: () => void;
-  onEditInvoice: (id: string) => void;
   onDeleteInvoice: (id: string) => void;
   month: string;
 }
@@ -30,7 +29,6 @@ export default function FornitoreCard({
   total,
   isOpen,
   onToggle,
-  onEditInvoice,
   onDeleteInvoice,
   month,
 }: SupplierCardProps) {
