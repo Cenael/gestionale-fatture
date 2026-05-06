@@ -12,9 +12,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Gestionale Bar",
-  description: "Gestionale fatture per bar",
+  description: "Creato con Next.js",
+  manifest: "/manifest.json", // Fondamentale
+  themeColor: "#0284c7",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Gestionale Bar",
+  },
 };
 
 export default function RootLayout({
@@ -32,4 +40,6 @@ export default function RootLayout({
       </body>
     </html>
   );
+
+
 }

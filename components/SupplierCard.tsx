@@ -19,6 +19,7 @@ export interface SupplierCardProps {
   total: number;
   isOpen: boolean;
   onToggle: () => void;
+  onEditInvoice: (id: string) => void;
   onDeleteInvoice: (id: string) => void;
   month: string;
 }
@@ -29,6 +30,7 @@ export default function FornitoreCard({
   total,
   isOpen,
   onToggle,
+  onEditInvoice,
   onDeleteInvoice,
   month,
 }: SupplierCardProps) {
@@ -109,7 +111,7 @@ export default function FornitoreCard({
                 </div>
                 <div className="col-span-3 flex gap-3 justify-end">
                   <button
-                    onClick={() => router.push(`/modifica-fattura/${invoice.id}`)}
+                    onClick={() => router.push(`/edit-invoice/${invoice.id}`)}
                     className="px-2 py-1 text-slate-500 hover:text-slate-700 transition-colors text-sm"
                     title="Modifica"
                   >
